@@ -1408,8 +1408,8 @@ TEST_CASE("Real math functions") {
     CHECK(session.eval("$floor(123.456)").real() == floor(123.456));
     CHECK(session.eval("$ceil(123.456)").real() == ceil(123.456));
     CHECK(session.eval("$sin(123.456)").real() == sin(123.456));
-    CHECK(session.eval("$cos(123.456)").real() == cos(123.456));
-    CHECK(session.eval("$tan(123.456)").real() == tan(123.456));
+    CHECK(session.eval("$cos(123.456)").real() == Approx(cos(123.456)));
+    CHECK(session.eval("$tan(123.456)").real() == Approx(tan(123.456)));
     CHECK(session.eval("$asin(0.456)").real() == asin(0.456));
     CHECK(session.eval("$acos(0.456)").real() == acos(0.456));
     CHECK(session.eval("$atan(0.456)").real() == Approx(atan(0.456)));

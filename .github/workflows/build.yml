@@ -34,6 +34,32 @@ jobs:
         name: SLANG_ARTIFACT_WIN
         path: slang-windows.zip
 
+  build_macos:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/slang/
+        make install -j8
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure
+    - name: Archive binaries
+      run: |
+        strip --strip-unneeded $HOME/slang/bin/*
+        strip --strip-unneeded $HOME/slang/lib/*
+        tar -czvf slang-macos.tar.gz -C $HOME slang/
+    - name: Upload artifacts
+      if: github.event_name == 'push'
+      uses: actions/upload-artifact@v2
+      with:
+        name: SLANG_ARTIFACT_MACOS
+        path: slang-macos.tar.gz
+
   build_linux:
     runs-on: ubuntu-20.04
     strategy:
@@ -45,11 +71,16 @@ jobs:
             flags: '-DCMAKE_BUILD_TYPE=Release'
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
+    - name: Update apt-get
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         sudo apt-get update
-        sudo apt-get install -y g++-10 clang++-10 clang-tidy-10
+    - name: Install clang++-10 dependencies
+      if: matrix.compiler == 'clang++-10'
+      run: sudo apt-get install -y clang++-10 clang-tidy-10
+    - name: Install g++-10 dependencies
+      if: matrix.compiler == 'g++-10'
+      run: sudo apt-get install -y g++-10
     - name: Build
       run: |
         export PATH="$HOME/.local/bin:$PATH"
@@ -92,6 +123,9 @@ jobs:
         name: SLANG_ARTIFACT_WIN
     - uses: actions/download-artifact@v2
       with:
+        name: SLANG_ARTIFACT_MACOS
+    - uses: actions/download-artifact@v2
+      with:
         name: SLANG_ARTIFACT_LINUX
     - uses: meeDamian/github-release@2.0
       with:
@@ -102,4 +136,4 @@ jobs:
         prerelease: true
         allow_override: true
         gzip: false
-        files: slang-linux.tar.gz slang-windows.zip
+        files: slang-linux.tar.gz slang-windows.zip slang-macos.tar.gz
