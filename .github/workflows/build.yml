@@ -50,8 +50,6 @@ jobs:
         ctest --output-on-failure
     - name: Archive binaries
       run: |
-        strip --strip-unneeded $HOME/slang/bin/*
-        strip --strip-unneeded $HOME/slang/lib/*
         tar -czvf slang-macos.tar.gz -C $HOME slang/
     - name: Upload artifacts
       if: github.event_name == 'push'
@@ -75,7 +73,7 @@ jobs:
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         sudo apt-get update
-        sudo apt-get install -y g++-10 clang++-10 clang-tidy-10
+        sudo apt-get install -y g++-10 clang-10 clang-tidy-10
     - name: Build
       run: |
         export PATH="$HOME/.local/bin:$PATH"
