@@ -73,7 +73,7 @@ jobs:
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         sudo apt-get update
-        sudo apt-get install -y g++-10 clang-tidy
+        sudo apt-get install -y g++-10 clang-tidy-10
     - name: Build
       run: |
         export PATH="$HOME/.local/bin:$PATH"
